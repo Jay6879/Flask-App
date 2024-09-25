@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <!-- <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mediaqueries.css"> -->
+     <!-- Link to the CSS files -->
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/mediaqueries.css') }}">
+
+     <style>
+        
+        .work-container {
+            border: rgb(53,53,53) 0.1rem solid; /* Blue border for emphasis */
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9; /* Light background */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Adds shadow effect */
+        }
+    
+        .skills-sub-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+    
+        .work-container p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #555;
+        }
+    
+        .work-container ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+    
+        .work-container li {
+            margin-bottom: 10px;
+            line-height: 1.6em;
+            font-size: 1em;
+            color: rgb(53,53,53) 0.1rem solid;
+        }
+    </style>
+
+    
+     <style>
+        /* Chatbot Styles */
+#chatbot-container {
+    position: fixed;
+    bottom: 70px; /* Moved the container higher to prevent overlap with the toggle button */
+    right: 10px;
+    width: 300px;
+    max-width: 100%;
+    background-color: #f1f1f1;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+    z-index: 1000;
+}
+
+#chatbot-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#chatbot-messages {
+    height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+#chatbot-input {
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+#chatbot-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+}
+
+#chatbot-input button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.message.user {
+    text-align: right;
+}
+
+.message.bot {
+    text-align: left;
+    background-color: #eaeaea;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Adjust the toggle button to prevent overlap */
+button[onclick="toggleChatbot()"] {
+    position: fixed;
+    bottom: 10px; /* Moved higher to prevent collision with the chatbot container */
+    right: 20px; /* Added margin to prevent overlap with other UI elements */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50px;
+    z-index: 1000;
+}
+
+        
+    </style>
+
+</head>
+<body>
+
+    <!-- Chatbot Container -->
+    <div id="chatbot-container">
+        <div id="chatbot-header">Chat with GPT</div>
+        <div id="chatbot-messages"></div>
+        <div id="chatbot-input">
+            <input type="text" id="chatbot-user-input" placeholder="Type a message">
+            <button id="chatbot-send-btn">Send</button>
+        </div>
+    </div>
+
+    <!-- Add button to toggle chatbot visibility -->
+    <button style="position: fixed; bottom: 10px; right: 10px; background-color: #007bff; color: white; border: none; padding: 10px; border-radius: 50px; z-index: 1000;" onclick="toggleChatbot()">💬</button>
+
+    <!-- Chatbot JavaScript -->
+    <script>
+        // Toggle chatbot visibility
+        function toggleChatbot() {
+            var chatbot = document.getElementById("chatbot-container");
+            if (chatbot.style.display === "none" || chatbot.style.display === "") {
+                chatbot.style.display = "block";
+            } else {
+                chatbot.style.display = "none";
+            }
+        }
+
+        // Send message to chatbot
+        document.getElementById('chatbot-send-btn').addEventListener('click', function () {
+            const userInput = document.getElementById('chatbot-user-input').value;
+            if (userInput === "") return;
+
+            const messages = document.getElementById('chatbot-messages');
+
+            // Display user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.textContent = 'You: ' + userInput;
+            messages.appendChild(userMessage);
+
+            // Send user message to Flask (Backend)
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display bot message
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot';
+                botMessage.textContent = 'GPT: ' + data.message;
+                messages.appendChild(botMessage);
+
+                // Clear the input field
+                document.getElementById('chatbot-user-input').value = "";
+
+                // Auto scroll to the bottom
+                messages.scrollTop = messages.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+
+    <nav id="desktop-nav">
+        <div class="logo">Phanidhar Chandana</div>
+        <div>
+            <ul class = "nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#certifications">Certifications</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <nav id="hamburger-nav"> 
+        <div class="logo">Phanidhar Chandana</div>
+        <div class="hamburger-menu">
+            <div class="hamburger-icon" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+         </div>
+         <div class="menu-links">
+                <li><a href="#about" onclick="toggleMenu()">About</a></li>
+                <li><a href="#skills" onclick="toggleMenu()">Skills</a></li>
+                <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
+                <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+         </div>
+        </div>
+    </nav>
+
+    <section id="profile">
+        <div class="section__pic-container">
+            <img src="{{ url_for('static', filename='assets/profile-pic.png') }}" width="500" height="350" alt="Phanidhar Chandana profile picture">
+        </div>
+
+
+
+
+        <div class="section__text">
+            <p class="section__text__p1">Hello I'm</p>
+            <h1 class="title">Phanidhar Chandana</h1>
+            <p class="section__text__p2">Student at San Jose State University</p>
+            <div class="btn-container">
+                <button class="btn btn-color-2" onclick="window.open('{{ url_for('static', filename='assets/resume.pdf') }}')">Download CV</button>
+
+                <button class="btn btn-color-1" onclick="location.href='./#contact'">Contact Info</button>
+            </div>
+
+        <div id="socials-container">
+            <!-- <img src="./assets/linkedin.png" alt="Phanidhar's LinkedIn Profile" class="icon" onclick="location.href = 'https:https://www.linkedin.com/in/phanidhar-chandana-701b8b254/'"> -->
+            <img src="{{ url_for('static', filename='assets/linkedin.png') }}" alt="Phanidhar's LinkedIn Profile" class="icon" onclick="location.href='https://www.linkedin.com/in/phanidhar-chandana-701b8b254/'">
+
+            <!-- <img src="./assets/github.png" alt="Phanidhar's github Profile" class="icon" onclick="location.href = 'https://github.com/Imsravan?tab=repositories/'"> -->
+            <img src="{{ url_for('static', filename='assets/github.png') }}" alt="Phanidhar's GitHub Profile" class="icon" onclick="location.href='https://github.com/Imsravan?tab=repositories'">
+
+        </div>
+    </div> 
+    </section>
+
+    <section id="about">
+        <p class="section__text__p1">Get To Know More</p>
+        <h1 class="title">About Me</h1>
+        <div class="">
+            <!-- <div class="section__pic-container">
+                <!-- <img src="assets/about-pic.png" alt="Profile picture" -->
+                <!-- class="about-pic"> -->
+            <!-- </div> --> 
+
+        <!-- <div class="about-details-container"> -->
+        <div class="about-details-container">
+            <div class="about-containers">
+                <div class="details-container">
+                    <!-- <img src="./assets/experience.png" alt="experience icon" class="icon"/> -->
+                    <img src="{{ url_for('static', filename='assets/experience.png') }}" alt="experience icon" class="icon">
+
+
+                     <h3>Research Interests: Machine Learning, Information Retrieval</h3>
+                     <br>
+                     <p>
+                        Conducted research in Machine Learning and Information Retrieval, focusing on developing innovative solutions to real-world challenges. Implemented a user authentication system using advanced machine learning models, achieving 91% accuracy by integrating Transformer-based models (BERT) with Recurrent Neural Networks (LSTM, GRU). 
+                        <br>
+                        Additionally, optimized API designs and retrieval systems to significantly reduce latency and increase throughput in microservices architectures, applying natural language processing and information retrieval techniques to enhance system efficiency
+                     </p>
+                    
+                </div>
+                <div class="details-container">
+                    <!-- <img src="./assets/education.png" alt="Education icon" class="icon"/> -->
+                    <img src="{{ url_for('static', filename='assets/education.png') }}" alt="Education icon" class="icon">
+
+                     <h3>Education</h3>
+                     <p>M.S,  Computer Science<br> (2023-2025) <br> San Jose State University, San Jose, CA </p>
+                     <br>
+                     <br>
+                     <p>B.Tech,  Computer Science<br> (2017-2021) <br> Amrita Vishwa Vidyapeetham, Bengaluru, India </p>
+                </div>
+            </div>
+
+            <div class="text-container">
+                <p>Software Engineer with a Master's in Computer Science from San Jose State University, I specialize in leveraging my deep understanding of machine learning and web development to create innovative solutions. My experience at Informatica Business Solutions, where I significantly improved data migration processes and server response times, reflects my commitment to operational excellence. My successful projects, including a machine learning-based user authentication system and a full-stack movie booking application, showcase my ability to lead and innovate. Recognized for my contributions, I am a recipient of the highest Informatica Organization Award and have published in IEEE ICSES 2021.    
+                </p>
+            </div>
+
+            
+        </div>
+        </div>
+
+        <img src="{{ url_for('static', filename='assets/arrow.png') }}" alt="Arrow Icon" class="icon arrow"
+        onclick="location.href='./#skills'">
+    </section>
+    
+    <section id="skills">
+        <p class="section__text__p1">Explore My</p>
+        <h1 class="title">Skills</h1>
+        <div class="skills-details-container">
+            <div class="about-containers">
+                <div class="details-container">
+                    <h2 class="skills-sub-title">Full Stack Skills</h2>
+                    <div class="article-container">
+                        <article>
+                            <!-- <img src="assets/checkmark.png" alt="experience icon" class="icon" />   -->
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+
+                            <div>
+                                <h3>HTML</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>CSS</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>JavaScript</h3>
+                                <p>Intermediate</p>
+
+                            </div>
+                        </article>
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>React</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>Express</h3>
+                                <p>Intermediate</p>
+
+                            </div>
+                        </article>
+
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>NodeJs</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>MongoDB</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+
+
+                    </div>
+                </div>
+
+                <div class="details-container">
+                    <h2 class="skills-sub-title">Computer Science Skills</h2>
+                    <div class="article-container">
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>Java</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>DSA</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>Python</h3>
+                                <p>Intermediate</p>
+
+                            </div>
+                        </article>
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>AI and Ml</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>Computer Networks</h3>
+                                <p>Intermediate</p>
+
+                            </div>
+                        </article>
+
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>DBMS</h3>
+                                <p>Experienced</p>
+
+                            </div>
+                        </article>
+
+                        <article>
+                            <img src="{{ url_for('static', filename='assets/checkmark.png') }}" alt="experience icon" class="icon">
+                            <div>
+                                <h3>Operating Systems</h3>
+                                <p>Basic</p>
+                            </div>
+                        </article>
+
+
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+
+    </section>
+    
+    <section id="projects">
+        <p class="section__text__p1">Browse My Recent</p>
+        <h1 class="title"> Projects</h1>
+
+        <div class="skills-details-container">
+            <div class="about-containers">
+            <div class="details-container color-container">
+                <div class="article-container">
+                    <img src="{{ url_for('static', filename='assets/project-1.png') }}" alt="Project-1" class="project-img">
+                </div>
+
+                <h2 class="skills-sub-title project-title">Image Caption Generation</h2>
+                <div class="btn-container">
+                    <button class="btn btn-color-2 project btn" onclick="location.href = 'https://github.com/Imsravan/nlpBasedUserAuthentication'">
+                    GitHub Repo</button>
+
+                </div>
+            </div>
+
+            <div class="details-container color-container">
+                <div class="article-container">
+                    <img src="{{ url_for('static', filename='assets/project-2.png') }}" alt="Project-1" class="project-img">
+                </div>
+
+                <h2 class="skills-sub-title project-title">E-commerce Website</h2>
+                <div class="btn-container">
+                    <button class="btn btn-color-2 project btn" onclick="location.href = 'https://github.com/Imsravan/Java-Based-Search-Engine'">
+                    GitHub Repo</button>
+
+                    <!-- <button class="btn btn-color-2 project btn" onclick="location.href = ' https://proshop-hm3t.onrender.com/'">
+                        Go Live</button> -->
+                </div>
+            </div>
+
+            <div class="details-container color-container">
+                <div class="article-container">
+                    <img src="{{ url_for('static', filename='assets/project-3.png') }}" alt="Project-3" class="project-img">
+                </div>
+
+                <h2 class="skills-sub-title project-title">Helment-detection</h2>
+                <div class="btn-container">
+                    <button class="btn btn-color-2 project btn" onclick="location.href = 'https://github.com/Imsravan/movieBookingApp'">
+                    GitHub Repo</button>
+
+                </div>
+            </div>
+
+            
+        </div>
+        </div>
+        <img src="{{ url_for('static', filename='assets/arrow.png') }}" alt="Arrow Icon" class="icon arrow"
+        onclick="location.href='./#certifications'">
+    </section>
+
+
+    <section id="projects">
+        
+        <h1 class="title"> Publication </h1>
+
+        <div class="skills-details-container">
+            <div class="about-containers">
+            <div class="details-container color-container">
+                <div class="article-container">
+                    <p>
+                        This publication presents a novel approach for detecting malicious URLs shared on Twitter. Leveraging advanced machine learning techniques, the study addresses the growing issue of cyber threats proliferated through social media platforms. By analyzing Twitter data, the research develops a model capable of identifying harmful URLs with high accuracy, contributing to the broader effort of enhancing online safety. The findings were presented at the International Conference on Software Engineering and Security (ICSES) 2021, and the work has been recognized for its practical application in cybersecurity.
+                    </p>
+                </div>
+
+                <h2 class="skills-sub-title project-title"></h2>
+                <div class="btn-container">
+                    <button class="btn btn-color-2 project btn" onclick="location.href = 'https://ieeexplore.ieee.org/document/9633793'">
+                    Validate</button>
+
+                </div>
+            </div>
+            
+        </div>
+        </div>
+        <img src="{{ url_for('static', filename='assets/arrow.png') }}" alt="Arrow Icon" class="icon arrow"
+        onclick="location.href='./#certifications'">
+    </section>
+
+    <section id="projects">
+        
+        <h1 class="title"> Leadership </h1>
+
+        <div class="skills-details-container">
+            <div class="about-containers">
+            <div class="details-container color-container">
+                <div class="article-container">
+                    <p>
+                        Throughout my career, I have demonstrated strong leadership abilities by spearheading complex projects and collaborating with cross-functional teams. At Informatica, I led a team of 4 engineers to develop a movie booking web application, where I not only guided the team through architectural decisions but also optimized performance to handle over 10,000 concurrent requests using advanced caching and load-balancing techniques. My ability to lead by example, coupled with clear communication and technical expertise, enabled me to successfully drive projects to completion while fostering a collaborative and efficient team environment. This experience has sharpened my leadership skills, empowering me to take initiative, manage resources effectively, and motivate teams to achieve shared goals.
+                     </p>
+                </div>
+
+                <h2 class="skills-sub-title project-title"></h2>
+                
+            </div>
+            
+        </div>
+        </div>
+        <img src="{{ url_for('static', filename='assets/arrow.png') }}" alt="Arrow Icon" class="icon arrow"
+        onclick="location.href='./#certifications'">
+    </section>
+
+    <section id="projects">
+        
+        <h1 class="title">WorK Experience</h1>
+
+        <div class="skills-details-container">
+            <div class="about-containers">
+                <div class="work-container">
+                        <h2 class="skills-sub-title">Software Development Engineer Intern</h2>
+            
+                <h3></h3>
+                <p><strong>Informatica, Redwood City, USA</strong> | May 2024 - Aug 2024</p>
+                <ul>
+                    <li>Contributed to the design and implementation of a robust conversation session management service using Java, Spring Boot, MongoDB, and WebSockets to handle over 100,000 active sessions daily within a microservices architecture.</li>
+                    <li>Leveraged Redis for session management and utilized its Pub/Sub capabilities along with Kafka for distributed message brokering, maintaining high availability and ensuring real-time data consistency across distributed WebSocket servers.</li>
+                    <li>Optimized backend APIs by implementing GraphQL for more efficient data retrieval, alongside caching mechanisms and NoSQL Query Optimization, resulting in a 50% reduction in latency and a 30% increase in throughput.</li>
+                    <li>Developed automation frameworks using JavaScript and Java that carried out end-to-end API testing, UI testing, and provided vertical and horizontal coverage.</li>
+                </ul>
+                </div>
+
+                <div class="work-container">
+                    <h2 class="skills-sub-title">Software Engineer </h2>
+                    <br>
+                    <br>
+
+                    <div class="experience">
+                        
+                        <p><strong>Informatica, Bengaluru, India</strong> | Jan 2021 - July 2023</p>
+                        <ul>
+                            <li>Developed scalable applications using Java, SpringBoot, React, and MySQL for Cloud Data Migration, automating the conversion of assets and increasing data migration efficiency by 70%.</li>
+                            <li>Refactored the O2N codebase in SpringBoot and React, achieving a 50% faster server response time, resulting in a 15% boost in user retention due to improved performance.</li>
+                            <li>Engineered CI/CD pipelines using Jenkins across multiple microservices to ensure product stability and early detection of performance bottlenecks in the SDLC.</li>
+                            <li>Collaborated with cross-functional teams to successfully design and build REST APIs using Object-Oriented Programming, to assess asset convertibility which eliminated the need for manual verification and resulted in a 60% time reduction.</li>
+                        </ul>
+                    </div>
+            </div>
+
+            
+        </div>
+        </div>
+        <img src="{{ url_for('static', filename='assets/arrow.png') }}" alt="Arrow Icon" class="icon arrow"
+        onclick="location.href='./#certifications'">
+    </section>
+
+    <section id="certifications">
+        <!-- <p class="section__text__p1">Validate My</p> -->
+        <h1 class="title">Honors</h1>
+
+        <div class="Certifications-details-container">
+            <div class="about-containers">
+                <div class="certifications-container">
+                    <div class="certifications-articles-container">
+                        <img src="{{ url_for('static', filename='assets/codechef.png') }}" alt="certificate-1" class="certifications-img">
+                    </div>
+    
+                    <h2 class="skills-sub-title project-title"> Codechef Certified Programmer</h2>
+                    <!-- <div class="btn-container">
+                        <button class="btn btn-color-2 project btn" onclick="location.href = 'https://drive.google.com/file/d/1K1ahSmZojL82FfzHlSTIvfrRuw3ruihp/view'">
+                        Validate</button>
+    
+                    </div> -->
+                </div>
+
+                <div class="certifications-container">
+                    <div class="certifications-articles-container">
+                        <img src="{{ url_for('static', filename='assets/certificate-2.jpeg') }}" alt="certification-2" class="certifications-img">
+                    </div>
+    
+                    <h2 class="skills-sub-title project-title">MERN Full Stack by <br> Ethnus</h2>
+                    <!-- <div class="btn-container">
+                        <button class="btn btn-color-2 project btn" onclick="location.href = 'https://drive.google.com/file/d/1VEangWGHhKS-W_f-znBLQmuf_MOOj-8w/view'">
+                        Validate</button>
+    
+                    </div> -->
+                </div>
+                
+            </div>
+        </div>
+
+        <img src="{{ url_for('static', filename='assets/arrow.png') }}" alt="Arrow Icon" class="icon arrow"
+        onclick="location.href='./#contact'">
+
+    </section>
+
+    <section id="contact">
+        <p class="section__text__p1">Get In Touch</p>
+        <h1 class="title">Contact Me</h1>
+
+        <div class="contact-info-upper-container">
+            <div class="contact-info-container">
+                <img src="{{ url_for('static', filename='assets/email.png') }}" alt="Email Icon" class="icon contact-icon email-icon">
+
+                <p><a href="mailto:phanidharsaisravan.chandana@sjsu.edu">phanidharsaisravan.chandana@sjsu.edu</a></p>
+            </div>
+
+            <div class="contact-info-container">
+                <img src="{{ url_for('static', filename='assets/linkedin.png') }}" alt="LinkedIn Icon" class="icon contact-icon">
+
+                <p><a href="https://www.linkedin.com/in/phanidhar-chandana-701b8b254/">LinkedIn</a></p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <nav>
+            <div class="nav-links-conatiner">
+                <ul class = "nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#certifications">Certifications</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+        <p>Copyright &#169; 2024 Phanidhar chandana. All rights Reserved</p>
+    </footer>
+
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
